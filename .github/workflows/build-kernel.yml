@@ -24,7 +24,7 @@ jobs:
 
     - name: Build and install latest pahole # [新增]
       run: |
-        git clone https://git.kernel.org/pub/scm/devel/pahole/pahole.git
+        git clone https://git.kernel.org/pub/scm/devel/pahole/pahole.git -b v1.26
         cd pahole
         mkdir build && cd build
         cmake ..
