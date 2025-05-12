@@ -96,7 +96,6 @@ jobs:
         echo "CONFIG_DEBUG_KERNEL=y" >> .config
         echo "CONFIG_DEBUG_INFO=y" >> .config
         
-        yes "" | make ARCH=x86 olddefconfig
 
     - name: Build kernel and bzImage
       working-directory: kernel
@@ -106,6 +105,7 @@ jobs:
         KBUILD_BUILD_USER: root
         KBUILD_BUILD_HOST: euler
       run: |
+        export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
         make ARCH=$ARCH -j$(nproc)
         make ARCH=$ARCH bzImage
         ls -lh arch/x86/boot/bzImage vmlinux System.map
