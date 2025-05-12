@@ -23,7 +23,7 @@ jobs:
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100
         gcc --version
 
-    - name: Clone openeuler kernel from Gitee
+    - name: Clone openeuler kernel
       run: |
         git clone https://github.com/openeuler-mirror/kernel -b OLK-5.10
 
