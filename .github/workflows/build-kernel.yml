@@ -1,47 +1,49 @@
-name: Build openEuler Kernel
+name: Build Kernel from Gitee
 
 on:
   push:
-    branches:
-    - main
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
 
 
 jobs:
-  build-kernel:
+  build:
     runs-on: ubuntu-22.04
-    name: Build openEuler OLK-5.10 Kernel
 
     steps:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev git wget bc
-        sudo apt install -y gcc-10 g++-10
+        sudo apt install -y gcc-10 g++-10 bc bison flex libssl-dev make libelf-dev dwarves
+
+    - name: Set GCC 10.3
+      run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100
+        gcc --version
 
-    - name: Checkout openEuler Kernel source
-      uses: actions/checkout@v4
-      with:
-        repository: openeuler/kernel
-        ref: OLK-5.10
-        path: kernel
+    - name: Clone openeuler kernel from Gitee
+      run: |
+        git clone https://gitee.com/openeuler/kernel.git
+        cd kernel
+        git checkout OLK-5.10
 
-    - name: Configure the kernel
+    - name: Build Kernel
       working-directory: kernel
       run: |
         make defconfig
+        make -j$(nproc)
+        ls -lh vmlinux
+        ls -lh System.map
 
-    - name: Build the kernel
-      working-directory: kernel
-      run: |
-        make -j$(nproc) vmlinux
-
-    - name: Upload vmlinux and System.map as artifacts
+    - name: Upload vmlinux artifact
       uses: actions/upload-artifact@v4
       with:
-        name: vmlinux-and-map
-        path: |
-          kernel/vmlinux
-          kernel/System.map
+        name: vmlinux
+        path: kernel/vmlinux
+
+    - name: Upload System.map artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: System.map
+        path: kernel/System.map
