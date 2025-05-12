@@ -27,7 +27,7 @@ jobs:
         git clone https://git.kernel.org/pub/scm/devel/pahole/pahole.git -b v1.26
         cd pahole
         mkdir build && cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+        cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local/lib
         make -j$(nproc)
         sudo make install
         echo "LD_LIBRARY_PATH=/usr/local/lib" >> $GITHUB_ENV
