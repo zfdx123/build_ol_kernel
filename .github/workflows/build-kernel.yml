@@ -38,6 +38,12 @@ jobs:
       working-directory: kernel
       run: |
         make ARCH=x86 i386_defconfig
+        
+    - name: Enable CONFIG_DEBUG_INFO
+      working-directory: kernel
+      run: |
+        echo 'CONFIG_DEBUG_INFO=y' >> .config
+        yes "" | make ARCH=x86 olddefconfig
 
     - name: Build kernel and bzImage
       working-directory: kernel
@@ -47,7 +53,7 @@ jobs:
         KBUILD_BUILD_USER: root
         KBUILD_BUILD_HOST: euler
       run: |
-        make ARCH=$ARCH -j$(nproc) CONFIG_DEBUG_INFO=y
+        make ARCH=$ARCH -j$(nproc)
         make ARCH=$ARCH bzImage
         ls -lh arch/x86/boot/bzImage vmlinux System.map
 
