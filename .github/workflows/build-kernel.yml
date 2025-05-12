@@ -19,8 +19,18 @@ jobs:
           gcc-10 g++-10 gcc-10-multilib g++-10-multilib \
           binutils binutils-i686-linux-gnu \
           bc bison flex libssl-dev libelf-dev dwarves \
-          build-essential libncurses-dev dwarves 
+          build-essential libncurses-dev \
+          cmake git libdw-dev libdwarf-dev zlib1g-dev libiberty-dev
 
+    - name: Build and install latest pahole # [新增]
+      run: |
+        git clone https://git.kernel.org/pub/scm/devel/pahole/pahole.git
+        cd pahole
+        mkdir build && cd build
+        cmake ..
+        make -j$(nproc)
+        sudo make install
+        pahole --version
     - name: Set GCC and LD versions
       run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
