@@ -30,8 +30,8 @@ jobs:
     - name: Build Kernel
       working-directory: kernel
       run: |
-        make defconfig
-        make -j$(nproc)
+        make ARCH=x86 defconfig
+        make ARCH=x86 -j$(nproc)
         ls -lh vmlinux
         ls -lh System.map
 
