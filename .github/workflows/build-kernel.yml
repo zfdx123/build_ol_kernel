@@ -47,7 +47,7 @@ jobs:
         KBUILD_BUILD_USER: root
         KBUILD_BUILD_HOST: euler
       run: |
-        make ARCH=$ARCH -j$(nproc)
+        make ARCH=$ARCH -j$(nproc) CONFIG_DEBUG_INFO=y
         make ARCH=$ARCH bzImage
         ls -lh arch/x86/boot/bzImage vmlinux System.map
 
