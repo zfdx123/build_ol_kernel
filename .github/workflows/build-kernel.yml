@@ -22,16 +22,18 @@ jobs:
           build-essential libncurses-dev \
           cmake git libdw-dev libdwarf-dev zlib1g-dev libiberty-dev
 
-    - name: Build and install latest pahole # [新增]
+    - name: Build and install pahole v1.26
       run: |
         git clone https://git.kernel.org/pub/scm/devel/pahole/pahole.git -b v1.26
         cd pahole
         mkdir build && cd build
-        cmake ..
+        cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
         make -j$(nproc)
         sudo make install
-        export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+        echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/dwarves.conf
+        sudo ldconfig
         pahole --version
+  
     - name: Set GCC and LD versions
       run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
@@ -41,7 +43,7 @@ jobs:
         echo "LD Version:"
         ld --version
 
-    - name: Clone kernel source from Gitee
+    - name: Clone kernel source
       run: |
         git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b v5.10 kernel
 
@@ -110,7 +112,6 @@ jobs:
         KBUILD_BUILD_USER: root
         KBUILD_BUILD_HOST: euler
       run: |
-        export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
         make ARCH=$ARCH -j$(nproc)
         make ARCH=$ARCH bzImage
         ls -lh arch/x86/boot/bzImage vmlinux System.map
