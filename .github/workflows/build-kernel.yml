@@ -1,0 +1,47 @@
+name: Build openEuler Kernel
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-22.04
+    name: Build openEuler OLK-5.10 Kernel
+
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev git wget bc
+        sudo apt install -y gcc-10 g++-10
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100
+
+    - name: Checkout openEuler Kernel source
+      uses: actions/checkout@v4
+      with:
+        repository: openeuler/kernel
+        ref: OLK-5.10
+        path: kernel
+
+    - name: Configure the kernel
+      working-directory: kernel
+      run: |
+        make defconfig
+
+    - name: Build the kernel
+      working-directory: kernel
+      run: |
+        make -j$(nproc) vmlinux
+
+    - name: Upload vmlinux and System.map as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: vmlinux-and-map
+        path: |
+          kernel/vmlinux
+          kernel/System.map
