@@ -43,6 +43,11 @@ jobs:
       working-directory: kernel
       run: |
         echo 'CONFIG_DEBUG_INFO=y' >> .config
+        echo "CONFIG_BPF=y" >> .config
+        echo "CONFIG_IOMMU=y" >> .config
+        echo "CONFIG_CGROUPS=y" >> .config
+        echo "CONFIG_XDP=y" >> .config
+        echo "CONFIG_KALLSYMS=y" >> .config
         yes "" | make ARCH=x86 olddefconfig
 
     - name: Build kernel and bzImage
