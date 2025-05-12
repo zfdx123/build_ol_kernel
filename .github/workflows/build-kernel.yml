@@ -32,7 +32,7 @@ jobs:
 
     - name: Clone kernel source from Gitee
       run: |
-        git clone https://github.com/zfdx123/kernel.git -b OLK-5.10
+        git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b v5.10
 
     - name: Use i386_defconfig for real x86
       working-directory: kernel
