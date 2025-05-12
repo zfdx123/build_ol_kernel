@@ -42,12 +42,40 @@ jobs:
     - name: Enable CONFIG_DEBUG_INFO
       working-directory: kernel
       run: |
-        echo 'CONFIG_DEBUG_INFO=y' >> .config
-        echo "CONFIG_BPF=y" >> .config
-        echo "CONFIG_IOMMU=y" >> .config
-        echo "CONFIG_CGROUPS=y" >> .config
-        echo "CONFIG_XDP=y" >> .config
-        echo "CONFIG_KALLSYMS=y" >> .config
+        # BPF 相关
+        echo "CONFIG_BPF_SYSCALL=y" >> .config
+        echo "CONFIG_BPF_JIT=y" >> .config
+        echo "CONFIG_CGROUP_BPF=y" >> .config
+
+        # 网络设备
+        echo "CONFIG_NET_UDP_TUNNEL=y" >> .config
+        echo "CONFIG_SFP=y" >> .config
+        echo "CONFIG_PHYLINK=y" >> .config
+        
+        echo "CONFIG_MEMCG=y" >> .config
+        echo "CONFIG_MEMCG_KMEM=y" >> .config
+
+        # IOMMU
+        echo "CONFIG_IOMMU_SUPPORT=y" >> .config
+        echo "CONFIG_IOMMU_DEFAULT_DMA_STRICT=y" >> .config
+
+        # GPIO
+        echo "CONFIG_GPIOLIB=y" >> .config
+        echo "CONFIG_GPIO_SYSFS=y" >> .config
+
+        # MTD
+        echo "CONFIG_MTD=y" >> .config
+
+        # 复位控制
+        echo "CONFIG_RESET_CONTROLLER=y" >> .config
+
+        # BTF
+        echo "CONFIG_DEBUG_INFO_BTF=y" >> .config
+
+        # 其他调试
+        echo "CONFIG_DEBUG_KERNEL=y" >> .config
+        echo "CONFIG_DEBUG_INFO=y" >> .config
+        
         yes "" | make ARCH=x86 olddefconfig
 
     - name: Build kernel and bzImage
