@@ -25,7 +25,7 @@ jobs:
 
     - name: Clone openeuler kernel from Gitee
       run: |
-        git clone https://gitee.com/openeuler/kernel.git -b OLK-5.10
+        git clone https://github.com/openeuler-mirror/kernel -b OLK-5.10
 
     - name: Build Kernel
       working-directory: kernel
