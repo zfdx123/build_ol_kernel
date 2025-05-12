@@ -1,11 +1,9 @@
-name: Build Kernel from Gitee
+name: Build 32-bit x86 bzImage Kernel
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-  workflow_dispatch:
-
 
 jobs:
   build:
@@ -14,35 +12,58 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
+        sudo dpkg --add-architecture i386
         sudo apt update
-        sudo apt install -y gcc-10 g++-10 bc bison flex libssl-dev make libelf-dev dwarves
+        sudo apt install -y \
+          gcc-10 g++-10 gcc-10-multilib g++-10-multilib \
+          binutils binutils-i686-linux-gnu \
+          bc bison flex libssl-dev libelf-dev dwarves \
+          build-essential libncurses-dev
 
-    - name: Set GCC 10.3
+    - name: Set GCC and LD versions
       run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100
+        echo "GCC Version:"
         gcc --version
+        echo "LD Version:"
+        ld --version
 
-    - name: Clone openeuler kernel
+    - name: Clone kernel source from Gitee
       run: |
-        git clone https://github.com/openeuler-mirror/kernel -b OLK-5.10
+        git clone https://github.com/openeuler-mirror/kernel.git -b OLK-5.10
 
-    - name: Build Kernel
+    - name: Use i386_defconfig for real x86
       working-directory: kernel
       run: |
-        make ARCH=x86 defconfig
-        make ARCH=x86 -j$(nproc)
-        ls -lh vmlinux
-        ls -lh System.map
+        make ARCH=x86 i386_defconfig
 
-    - name: Upload vmlinux artifact
+    - name: Build kernel and bzImage
+      working-directory: kernel
+      env:
+        ARCH: x86
+        HOSTNAME: euler
+        KBUILD_BUILD_USER: root
+        KBUILD_BUILD_HOST: euler
+      run: |
+        make ARCH=$ARCH -j$(nproc)
+        make ARCH=$ARCH bzImage
+        ls -lh arch/x86/boot/bzImage vmlinux System.map
+
+    - name: Upload bzImage
       uses: actions/upload-artifact@v4
       with:
-        name: vmlinux
+        name: bzImage-x86
+        path: kernel/arch/x86/boot/bzImage
+
+    - name: Upload vmlinux
+      uses: actions/upload-artifact@v4
+      with:
+        name: vmlinux-x86
         path: kernel/vmlinux
 
-    - name: Upload System.map artifact
+    - name: Upload System.map
       uses: actions/upload-artifact@v4
       with:
-        name: System.map
+        name: System.map-x86
         path: kernel/System.map
