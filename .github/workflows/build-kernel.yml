@@ -60,9 +60,8 @@ jobs:
         cd kernel
         cp $GITHUB_WORKSPACE/patch/elf.patch .
         patch -p0 < elf.patch
-    
-        # 修改 Makefile 中的 EXTRAVERSION
-        sed -i 's/^EXTRAVERSION = .*/EXTRAVERSION = ""/' Makefile
+        
+        echo "" > .scmversion
 
     - name: Use x86_64_defconfig
       working-directory: kernel
