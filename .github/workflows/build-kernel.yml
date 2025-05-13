@@ -22,9 +22,9 @@ jobs:
           build-essential libncurses-dev \
           cmake git libdw-dev libdwarf-dev zlib1g-dev libiberty-dev
 
-    - name: Build and install pahole v1.26
+    - name: Build and install pahole v1.22
       run: |
-        git clone https://git.kernel.org/pub/scm/devel/pahole/pahole.git -b v1.26
+        git clone https://git.kernel.org/pub/scm/devel/pahole/pahole.git -b v1.22
         cd pahole
         mkdir build && cd build
         cmake .. \
