@@ -1,0 +1,16 @@
+--- tools/objtool/elf.c	2025-05-13 17:55:35.404190500 +0800
++++ tools/objtool/elf.c	2025-05-13 17:56:11.454281400 +0800
+@@ -354,8 +354,11 @@
+ 
+ 	symtab = find_section_by_name(elf, ".symtab");
+ 	if (!symtab) {
+-		WARN("missing symbol table");
+-		return -1;
++		/*
++		 * A missing symbol table is actually possible if it's an empty
++		 * .o file. This can happen for thunk_64.o with modern binutils.
++		 */
++		return 0;
+ 	}
+ 
+ 	symtab_shndx = find_section_by_name(elf, ".symtab_shndx");

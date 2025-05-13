@@ -6,6 +6,7 @@ on:
   pull_request:
   workflow_dispatch:
 
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -38,7 +39,7 @@ jobs:
         sudo ldconfig
         echo "LD_LIBRARY_PATH=/usr/local/lib" >> $GITHUB_ENV
         pahole --version
-  
+
     - name: Set GCC and LD versions
       run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100
@@ -51,40 +52,43 @@ jobs:
     - name: Clone kernel source
       run: |
         git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b v5.10.1 kernel
+        cd kernel
+        cp $$GITHUB_WORKSPACE/patch/elf.patch .
+        patch -p1 < elf.patch
 
     - name: Use x86_64_defconfig
       working-directory: kernel
       run: |
         make x86_64_defconfig
-        
+
         # 启用 BPF / Netfilter / XDP
         scripts/config --enable CONFIG_BPF
         scripts/config --enable CONFIG_BPF_SYSCALL
         scripts/config --enable CONFIG_NETFILTER
         scripts/config --enable CONFIG_NETFILTER_ADVANCED
         scripts/config --enable CONFIG_NF_CONNTRACK
-        
+
         # 启用 CGROUP 支持
         scripts/config --enable CONFIG_CGROUPS
         scripts/config --enable CONFIG_MEMCG
         scripts/config --enable CONFIG_CGROUP_FREEZER
         scripts/config --enable CONFIG_CGROUP_SCHED
         scripts/config --enable CONFIG_CGROUP_DEVICE
-        
+
         # 启用 MTD
         scripts/config --enable CONFIG_MTD
         scripts/config --enable CONFIG_MTD_BLOCK
         scripts/config --enable CONFIG_MTD_CHAR
         scripts/config --enable CONFIG_MTD_CFI
-        
+
         # 启用 GPIO
         scripts/config --enable CONFIG_GPIO_SYSFS
-        
+
         # 启用 PHYLINK / SFP（用于某些网络设备）
         scripts/config --enable CONFIG_NET_DEVLINK
         scripts/config --enable CONFIG_PHYLINK
         scripts/config --enable CONFIG_SFP
-        
+
         # 通用调试符号和 DWARF
         scripts/config --enable CONFIG_DEBUG_INFO
         scripts/config --enable CONFIG_DEBUG_INFO_DWARF4
