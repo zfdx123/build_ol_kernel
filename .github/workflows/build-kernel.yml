@@ -50,7 +50,31 @@ jobs:
 
     - name: Clone kernel source
       run: |
-        git clone https://github.com/openeuler-mirror/kernel -b OLK-5.10 kernel
+        git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b v5.10 kernel
+
+    - name: Apply patch for objtool thunk_64.o issue
+      working-directory: kernel
+      run: |
+        cat << 'EOF' > fix-objtool-thunk-empty.patch
+        --- a/tools/objtool/elf.c
+        +++ b/tools/objtool/elf.c
+        @@ -380,8 +380,11 @@ static int read_symbols(struct elf *elf)
+         
+                symtab = find_section_by_name(elf, ".symtab");
+                if (!symtab) {
+        -               WARN("missing symbol table");
+        -               return -1;
+        +               /*
+        +                * A missing symbol table is actually possible if it's an empty
+        +                * .o file.  This can happen for thunk_64.o.
+        +                */
+        +               return 0;
+                }
+         
+                symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
+        EOF
+
+        patch -p1 < fix-objtool-thunk-empty.patch
 
     - name: Use x86_64_defconfig
       working-directory: kernel
