@@ -57,55 +57,6 @@ jobs:
       run: |
         make x86_64_defconfig
         
-    - name: Enable CONFIG_DEBUG_INFO
-      working-directory: kernel
-      run: |
-        # 1. 清理旧配置冲突
-        sed -i '/CONFIG_BPF_/d' .config
-        sed -i '/CONFIG_DEBUG_/d' .config
-        sed -i '/CONFIG_MTD/d' .config
-        sed -i '/CONFIG_GPIOLIB/d' .config
-
-        # 2. 追加你的配置
-        cat <<EOF >> .config
-        # BPF 相关
-        CONFIG_BPF_SYSCALL=y
-        CONFIG_BPF_JIT=y
-        CONFIG_CGROUP_BPF=y
-        
-        # 调试信息
-        CONFIG_DEBUG_INFO=y
-        CONFIG_DEBUG_INFO_DWARF4=y
-        CONFIG_DEBUG_INFO_BTF=y
-        CONFIG_PAHOLE_HAS_SPLIT_BTF=y
-        CONFIG_PAHOLE_HAS_BTF_TAG=y
-        
-        # 网络设备
-        CONFIG_NET_UDP_TUNNEL=y
-        CONFIG_SFP=y
-        CONFIG_PHYLINK=y
-        
-        # 内存管理
-        CONFIG_MEMCG=y
-        CONFIG_MEMCG_KMEM=y
-        
-        # IOMMU
-        CONFIG_IOMMU_SUPPORT=y
-        CONFIG_IOMMU_DEFAULT_DMA_STRICT=y
-        
-        # GPIO
-        CONFIG_GPIOLIB=y
-        CONFIG_GPIO_SYSFS=y
-        
-        # MTD
-        CONFIG_MTD=y
-        
-        # 复位控制
-        CONFIG_RESET_CONTROLLER=y
-        
-        # 其他调试
-        CONFIG_DEBUG_KERNEL=y
-        EOF
 
         
 
