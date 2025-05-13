@@ -50,7 +50,7 @@ jobs:
 
     - name: Clone kernel source
       run: |
-        git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b v5.10 kernel
+        git clone https://github.com/openeuler-mirror/kernel -b OLK-5.10 kernel
 
     - name: Use x86_64_defconfig
       working-directory: kernel
