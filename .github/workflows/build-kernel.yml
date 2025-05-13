@@ -107,18 +107,19 @@ jobs:
 
     - name: Build kernel and bzImage
       working-directory: kernel
-      env:
-        HOSTNAME: euler
-        KBUILD_BUILD_USER: root
-        KBUILD_BUILD_HOST: euler
       run: |
         make -j$(nproc) \
           KBUILD_BUILD_VERSION=82 \
           KBUILD_BUILD_USER=root \
           KBUILD_BUILD_HOST=euler \
           KBUILD_BUILD_TIMESTAMP="Wed Jan 17 22:57:06 CST 2024"
-        make KCFLAGS=-g bzImage
+        make -j$(nproc) bzImage \
+          KBUILD_BUILD_VERSION=82 \
+          KBUILD_BUILD_USER=root \
+          KBUILD_BUILD_HOST=euler \
+          KBUILD_BUILD_TIMESTAMP="Wed Jan 17 22:57:06 CST 2024"
         ls -lh arch/x86/boot/bzImage vmlinux System.map
+
 
     - name: Upload bzImage
       uses: actions/upload-artifact@v4
