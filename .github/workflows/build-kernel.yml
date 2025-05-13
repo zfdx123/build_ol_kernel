@@ -112,7 +112,11 @@ jobs:
         KBUILD_BUILD_USER: root
         KBUILD_BUILD_HOST: euler
       run: |
-        make KCFLAGS=-g -j$(nproc)
+        make -j$(nproc) \
+          KBUILD_BUILD_VERSION=82 \
+          KBUILD_BUILD_USER=root \
+          KBUILD_BUILD_HOST=euler \
+          KBUILD_BUILD_TIMESTAMP="Wed Jan 17 22:57:06 CST 2024"
         make KCFLAGS=-g bzImage
         ls -lh arch/x86/boot/bzImage vmlinux System.map
 
