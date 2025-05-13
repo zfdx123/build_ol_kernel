@@ -55,7 +55,7 @@ jobs:
     - name: Use i386_defconfig for real x86
       working-directory: kernel
       run: |
-        make ARCH=x86 i386_defconfig
+        make x86_64_defconfig
         
     - name: Enable CONFIG_DEBUG_INFO
       working-directory: kernel
@@ -112,13 +112,12 @@ jobs:
     - name: Build kernel and bzImage
       working-directory: kernel
       env:
-        ARCH: x86
         HOSTNAME: euler
         KBUILD_BUILD_USER: root
         KBUILD_BUILD_HOST: euler
       run: |
-        make ARCH=$ARCH -j$(nproc)
-        make ARCH=$ARCH bzImage
+        make -j$(nproc)
+        make bzImage
         ls -lh arch/x86/boot/bzImage vmlinux System.map
 
     - name: Upload bzImage
