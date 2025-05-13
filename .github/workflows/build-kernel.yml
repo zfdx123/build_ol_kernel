@@ -1,4 +1,4 @@
-name: Build 32-bit x86 bzImage Kernel
+name: Build bzImage Kernel
 
 on:
   push:
@@ -60,46 +60,50 @@ jobs:
         cd kernel
         cp $GITHUB_WORKSPACE/patch/elf.patch .
         patch -p0 < elf.patch
+    
+        # 修改 Makefile 中的 EXTRAVERSION
+        sed -i 's/^EXTRAVERSION = .*/EXTRAVERSION = ""/' Makefile
 
     - name: Use x86_64_defconfig
       working-directory: kernel
       run: |
         make x86_64_defconfig
-
+    
         # 启用 BPF / Netfilter / XDP
         scripts/config --enable CONFIG_BPF
         scripts/config --enable CONFIG_BPF_SYSCALL
         scripts/config --enable CONFIG_NETFILTER
         scripts/config --enable CONFIG_NETFILTER_ADVANCED
         scripts/config --enable CONFIG_NF_CONNTRACK
-
+        scripts/config --enable CONFIG_BPF_CGROUP_STORAGE
+    
         # 启用 CGROUP 支持
         scripts/config --enable CONFIG_CGROUPS
         scripts/config --enable CONFIG_MEMCG
         scripts/config --enable CONFIG_CGROUP_FREEZER
         scripts/config --enable CONFIG_CGROUP_SCHED
         scripts/config --enable CONFIG_CGROUP_DEVICE
-
+    
         # 启用 MTD
         scripts/config --enable CONFIG_MTD
         scripts/config --enable CONFIG_MTD_BLOCK
         scripts/config --enable CONFIG_MTD_CHAR
         scripts/config --enable CONFIG_MTD_CFI
-
+    
         # 启用 GPIO
         scripts/config --enable CONFIG_GPIO_SYSFS
-
+    
         # 启用 PHYLINK / SFP（用于某些网络设备）
         scripts/config --enable CONFIG_NET_DEVLINK
         scripts/config --enable CONFIG_PHYLINK
         scripts/config --enable CONFIG_SFP
-
+    
         # 通用调试符号和 DWARF
         scripts/config --enable CONFIG_DEBUG_INFO
         scripts/config --enable CONFIG_DEBUG_INFO_DWARF4
         scripts/config --disable CONFIG_DEBUG_INFO_REDUCED
         scripts/config --disable CONFIG_STRIP_ASM_SYMS
-
+    
         make olddefconfig
 
     - name: Build kernel and bzImage
