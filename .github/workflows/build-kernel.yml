@@ -52,9 +52,7 @@ jobs:
     - name: Clone kernel source
       run: |
         git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b v5.10 kernel
-        cd kernel
-        cp $GITHUB_WORKSPACE/patch/elf.patch .
-        patch -p1 < elf.patch
+        patch -d kernel -p1 < patch/elf.patch
 
     - name: Use x86_64_defconfig
       working-directory: kernel
