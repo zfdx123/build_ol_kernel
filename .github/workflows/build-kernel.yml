@@ -105,33 +105,21 @@ jobs:
         make -j$(nproc) bzImage
         
     # 新增模块收集和打包步骤
-    - name: Collect kernel modules
+    - name: Collect specific modules
       working-directory: kernel
       run: |
         mkdir -p ../modules
-        find . -type f \(
-          -name "nls_cp437.ko" -o
-          -name "nls_cp936.ko" -o
-          -name "nls_utf8.ko" -o
-          -name "fat.ko" -o
-          -name "vfat.ko" -o
-          -name "msdos.ko" -o
-          -name "exfat.ko" -o
-          -name "t10-pi.ko" -o
-          -name "raid_class.ko" -o
-          -name "scsi_transport_sas.ko" -o
-          -name "sd_mod.ko" -o
-          -name "sg.ko" -o
-          -name "usb-storage.ko" -o
-          -name "uas.ko" -o
-          -name "mpt3sas.ko" -o
-          -name "usbserial.ko" -o
-          -name "pl2303.ko" -o
-          -name "ch341.ko" -o
-          -name "ch9344.ko" -o
-          -name "cp210x.ko" -o
-          -name "ftdi_sio.ko"
-        \) -exec cp --parents {} ../modules \;
+        modules=(
+          nls_cp437.ko nls_cp936.ko nls_utf8.ko
+          fat.ko vfat.ko msdos.ko exfat.ko
+          t10-pi.ko raid_class.ko scsi_transport_sas.ko
+          sd_mod.ko sg.ko usb-storage.ko uas.ko
+          mpt3sas.ko usbserial.ko pl2303.ko
+          ch341.ko ch9344.ko cp210x.ko ftdi_sio.ko
+        )
+        for mod in "${modules[@]}"; do
+          find . -name "$mod" -exec cp --parents {} ../modules \;
+        done
 
     - name: Package modules
       run: |
