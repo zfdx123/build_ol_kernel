@@ -56,7 +56,9 @@ jobs:
 
     - name: Clone kernel source
       run: |
-        git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git -b v5.10 kernel
+        wget https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.10.tar.xz
+        tar xvf linux-5.10.tar.xz
+        mv linux-5.10 kernel
         cd kernel
         cp $GITHUB_WORKSPACE/patch/elf.patch .
         patch -p0 < elf.patch
@@ -67,60 +69,76 @@ jobs:
       working-directory: kernel
       run: |
         make x86_64_defconfig
-    
-        # 启用 BPF / Netfilter / XDP
-        scripts/config --enable CONFIG_BPF
-        scripts/config --enable CONFIG_BPF_SYSCALL
-        scripts/config --enable CONFIG_NETFILTER
-        scripts/config --enable CONFIG_NETFILTER_ADVANCED
-        scripts/config --enable CONFIG_NF_CONNTRACK
-        scripts/config --enable CONFIG_BPF_CGROUP_STORAGE
-    
-        # 启用 CGROUP 支持
-        scripts/config --enable CONFIG_CGROUPS
-        scripts/config --enable CONFIG_MEMCG
-        scripts/config --enable CONFIG_CGROUP_FREEZER
-        scripts/config --enable CONFIG_CGROUP_SCHED
-        scripts/config --enable CONFIG_CGROUP_DEVICE
-    
-        # 启用 MTD
-        scripts/config --enable CONFIG_MTD
-        scripts/config --enable CONFIG_MTD_BLOCK
-        scripts/config --enable CONFIG_MTD_CHAR
-        scripts/config --enable CONFIG_MTD_CFI
-    
-        # 启用 GPIO
-        scripts/config --enable CONFIG_GPIO_SYSFS
-    
-        # 启用 PHYLINK / SFP（用于某些网络设备）
-        scripts/config --enable CONFIG_NET_DEVLINK
-        scripts/config --enable CONFIG_PHYLINK
-        scripts/config --enable CONFIG_SFP
-    
-        # 通用调试符号和 DWARF
-        scripts/config --enable CONFIG_DEBUG_INFO
-        scripts/config --enable CONFIG_DEBUG_INFO_DWARF4
-        scripts/config --disable CONFIG_DEBUG_INFO_REDUCED
-        scripts/config --disable CONFIG_STRIP_ASM_SYMS
-    
+        # 文件系统配置
+        scripts/config --module CONFIG_FAT_FS
+        scripts/config --module CONFIG_VFAT_FS
+        scripts/config --module CONFIG_EXFAT_FS
+        scripts/config --module CONFIG_MSDOS_FS
+        scripts/config --module CONFIG_NLS_CODEPAGE_437
+        scripts/config --module CONFIG_NLS_UTF8
+        scripts/config --module CONFIG_NLS_CODEPAGE_936
+
+        # SCSI/SAS 配置
+        scripts/config --enable CONFIG_SCSI
+        scripts/config --enable CONFIG_BLK_DEV_SD
+        scripts/config --module CONFIG_CHR_DEV_SG
+        scripts/config --module CONFIG_SCSI_SAS_ATTRS
+        scripts/config --module CONFIG_MPT3SAS
+        scripts/config --module CONFIG_T10_PI
+        scripts/config --module CONFIG_RAID_CLASS
+
+        # USB 配置
+        scripts/config --module CONFIG_USB_STORAGE
+        scripts/config --module CONFIG_USB_UAS
+        scripts/config --module CONFIG_USB_SERIAL
+        scripts/config --module CONFIG_USB_SERIAL_PL2303
+        scripts/config --module CONFIG_USB_SERIAL_CH341
+        scripts/config --module CONFIG_USB_SERIAL_CP210X
+        scripts/config --module CONFIG_USB_SERIAL_FTDI_SIO
+
         make olddefconfig
 
     - name: Build kernel and bzImage
       working-directory: kernel
       run: |
-        make -j$(nproc) \
-          KBUILD_BUILD_VERSION=82 \
-          KBUILD_BUILD_USER=root \
-          KBUILD_BUILD_HOST=euler \
-          KBUILD_BUILD_TIMESTAMP="Wed Jan 17 22:57:06 CST 2024"
-        make -j$(nproc) bzImage \
-          KBUILD_BUILD_VERSION=82 \
-          KBUILD_BUILD_USER=root \
-          KBUILD_BUILD_HOST=euler \
-          KBUILD_BUILD_TIMESTAMP="Wed Jan 17 22:57:06 CST 2024"
-        ls -lh arch/x86/boot/bzImage vmlinux System.map
+        make -j$(nproc) 
+        make -j$(nproc) bzImage
+        
+    # 新增模块收集和打包步骤
+    - name: Collect kernel modules
+      working-directory: kernel
+      run: |
+        mkdir -p ../modules
+        find . -type f \(
+          -name "nls_cp437.ko" -o
+          -name "nls_cp936.ko" -o
+          -name "nls_utf8.ko" -o
+          -name "fat.ko" -o
+          -name "vfat.ko" -o
+          -name "msdos.ko" -o
+          -name "exfat.ko" -o
+          -name "t10-pi.ko" -o
+          -name "raid_class.ko" -o
+          -name "scsi_transport_sas.ko" -o
+          -name "sd_mod.ko" -o
+          -name "sg.ko" -o
+          -name "usb-storage.ko" -o
+          -name "uas.ko" -o
+          -name "mpt3sas.ko" -o
+          -name "usbserial.ko" -o
+          -name "pl2303.ko" -o
+          -name "ch341.ko" -o
+          -name "ch9344.ko" -o
+          -name "cp210x.ko" -o
+          -name "ftdi_sio.ko"
+        \) -exec cp --parents {} ../modules \;
 
+    - name: Package modules
+      run: |
+        tar -czvf kernel-modules.tar.gz -C modules .
+        ls -lh kernel-modules.tar.gz
 
+    # 上传所有产物
     - name: Upload bzImage
       uses: actions/upload-artifact@v4
       with:
@@ -138,3 +156,9 @@ jobs:
       with:
         name: System.map-x86
         path: kernel/System.map
+
+    - name: Upload kernel modules
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel-modules
+        path: kernel-modules.tar.gz
