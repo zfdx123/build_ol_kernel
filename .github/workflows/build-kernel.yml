@@ -123,7 +123,7 @@ jobs:
         )
         
         for cfg in "${modules_config[@]}"; do
-          grep "$cfg=" kernel/.config || echo "❌ $cfg not found in .config"
+          grep "$cfg=" .config || echo "❌ $cfg not found in .config"
         done
 
     - name: Build kernel and bzImage
