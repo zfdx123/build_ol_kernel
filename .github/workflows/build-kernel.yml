@@ -69,6 +69,7 @@ jobs:
       working-directory: kernel
       run: |
         make x86_64_defconfig
+        
         # 文件系统配置
         scripts/config --module CONFIG_FAT_FS
         scripts/config --module CONFIG_VFAT_FS
@@ -77,25 +78,35 @@ jobs:
         scripts/config --module CONFIG_NLS_CODEPAGE_437
         scripts/config --module CONFIG_NLS_UTF8
         scripts/config --module CONFIG_NLS_CODEPAGE_936
-
+        
         # SCSI/SAS 配置
         scripts/config --enable CONFIG_SCSI
-        scripts/config --enable CONFIG_BLK_DEV_SD
+        scripts/config --module CONFIG_BLK_DEV_SD      # 明确设为模块
         scripts/config --module CONFIG_CHR_DEV_SG
         scripts/config --module CONFIG_SCSI_SAS_ATTRS
         scripts/config --module CONFIG_MPT3SAS
         scripts/config --module CONFIG_T10_PI
         scripts/config --module CONFIG_RAID_CLASS
-
+        
         # USB 配置
+        scripts/config --enable CONFIG_USB             # 基础USB支持
+        scripts/config --enable CONFIG_USB_SUPPORT     # USB核心支持
         scripts/config --module CONFIG_USB_STORAGE
         scripts/config --module CONFIG_USB_UAS
-        scripts/config --module CONFIG_USB_SERIAL
+        scripts/config --enable CONFIG_USB_SERIAL      # USB串行核心
         scripts/config --module CONFIG_USB_SERIAL_PL2303
         scripts/config --module CONFIG_USB_SERIAL_CH341
+        scripts/config --module CONFIG_USB_SERIAL_CH9344
         scripts/config --module CONFIG_USB_SERIAL_CP210X
         scripts/config --module CONFIG_USB_SERIAL_FTDI_SIO
-
+        
+        # 确保所有依赖已启用
+        scripts/config --enable CONFIG_FUSION          # 为MPT3SAS
+        scripts/config --enable CONFIG_FUSION_SAS      # 为MPT3SAS
+        scripts/config --enable CONFIG_BLK_DEV         # 为RAID_CLASS
+        scripts/config --enable CONFIG_MD              # 为RAID_CLASS
+        scripts/config --enable CONFIG_BLK_DEV_INTEGRITY  # 为T10-PI
+        
         make olddefconfig
 
     - name: Build kernel and bzImage
