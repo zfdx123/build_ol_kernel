@@ -116,23 +116,6 @@ jobs:
         
         make olddefconfig
 
-
-        echo "Checking .config for expected modules:"
-        modules_config=(
-          CONFIG_NLS_CODEPAGE_437 CONFIG_NLS_CODEPAGE_936 CONFIG_NLS_UTF8
-          CONFIG_FAT_FS CONFIG_VFAT_FS CONFIG_MSDOS_FS CONFIG_EXFAT_FS
-          CONFIG_T10_PI CONFIG_RAID_CLASS CONFIG_SCSI_SAS_ATTRS
-          CONFIG_SCSI CONFIG_BLK_DEV_SD CONFIG_CHR_DEV_SG
-          CONFIG_USB_STORAGE CONFIG_USB_UAS CONFIG_USB_SERIAL
-          CONFIG_USB_SERIAL_PL2303 CONFIG_USB_SERIAL_CH341
-          CONFIG_USB_SERIAL_CH9344 CONFIG_USB_SERIAL_CP210X CONFIG_USB_SERIAL_FTDI_SIO
-          CONFIG_MPT3SAS
-        )
-        
-        for cfg in "${modules_config[@]}"; do
-          grep "$cfg=" .config || echo "❌ $cfg not found in .config"
-        done
-
     - name: Build kernel and bzImage
       working-directory: kernel
       run: |
