@@ -84,8 +84,15 @@ jobs:
         scripts/config --module CONFIG_BLK_DEV_SD      # 明确设为模块
         scripts/config --module CONFIG_CHR_DEV_SG
         scripts/config --module CONFIG_SCSI_SAS_ATTRS
+        
+        scripts/config --enable CONFIG_FUSION
+        scripts/config --enable CONFIG_FUSION_SAS
         scripts/config --module CONFIG_MPT3SAS
+        
+        scripts/config --enable CONFIG_BLK_DEV_INTEGRITY
         scripts/config --module CONFIG_T10_PI
+        
+        scripts/config --enable CONFIG_MD
         scripts/config --module CONFIG_RAID_CLASS
         
         # USB 配置
