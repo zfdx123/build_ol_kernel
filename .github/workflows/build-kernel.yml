@@ -87,13 +87,12 @@ jobs:
         
         scripts/config --enable CONFIG_FUSION
         scripts/config --enable CONFIG_FUSION_SAS
-        scripts/config --module CONFIG_MPT3SAS
+        scripts/config --module CONFIG_SCSI_MPT3SAS
         
-        scripts/config --enable CONFIG_BLK_DEV_INTEGRITY
-        scripts/config --module CONFIG_T10_PI
+        scripts/config --module CONFIG_BLK_DEV_INTEGRITY
         
         scripts/config --enable CONFIG_MD
-        scripts/config --module CONFIG_RAID_CLASS
+        scripts/config --module CONFIG_RAID_ATTRS
         
         # USB 配置
         scripts/config --enable CONFIG_USB             # 基础USB支持
