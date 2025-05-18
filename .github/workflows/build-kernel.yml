@@ -83,6 +83,7 @@ jobs:
         scripts/config --module CONFIG_BLK_DEV_SD
         scripts/config --module CONFIG_CHR_DEV_SG
         scripts/config --module CONFIG_SCSI_SAS_ATTRS
+        scripts/config --enable CONFIG_LIBCRC32C
         scripts/config --module CONFIG_BLK_DEV_INTEGRITY
         scripts/config --module CONFIG_RAID_ATTRS
         scripts/config --enable CONFIG_IRQ_POL
@@ -100,8 +101,6 @@ jobs:
         scripts/config --module CONFIG_USB_SERIAL_CH9344
         scripts/config --module CONFIG_USB_SERIAL_CP210X
         scripts/config --module CONFIG_USB_SERIAL_FTDI_SIO
-
-        scripts/config --enable CONFIG_BLK_DEV_INTEGRITY  # 为T10-PI
         
         make olddefconfig
 
