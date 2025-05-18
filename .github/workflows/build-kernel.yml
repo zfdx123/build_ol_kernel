@@ -80,18 +80,11 @@ jobs:
         scripts/config --module CONFIG_NLS_CODEPAGE_936
         
         # SCSI/SAS 配置
-        scripts/config --enable CONFIG_SCSI
-        scripts/config --module CONFIG_BLK_DEV_SD      # 明确设为模块
+        scripts/config --module CONFIG_BLK_DEV_SD
         scripts/config --module CONFIG_CHR_DEV_SG
         scripts/config --module CONFIG_SCSI_SAS_ATTRS
-        
-        scripts/config --enable CONFIG_FUSION
-        scripts/config --enable CONFIG_FUSION_SAS
         scripts/config --module CONFIG_SCSI_MPT3SAS
-        
         scripts/config --module CONFIG_BLK_DEV_INTEGRITY
-        
-        scripts/config --enable CONFIG_MD
         scripts/config --module CONFIG_RAID_ATTRS
         
         # USB 配置
@@ -105,12 +98,7 @@ jobs:
         scripts/config --module CONFIG_USB_SERIAL_CH9344
         scripts/config --module CONFIG_USB_SERIAL_CP210X
         scripts/config --module CONFIG_USB_SERIAL_FTDI_SIO
-        
-        # 确保所有依赖已启用
-        scripts/config --enable CONFIG_FUSION          # 为MPT3SAS
-        scripts/config --enable CONFIG_FUSION_SAS      # 为MPT3SAS
-        scripts/config --enable CONFIG_BLK_DEV         # 为RAID_CLASS
-        scripts/config --enable CONFIG_MD              # 为RAID_CLASS
+
         scripts/config --enable CONFIG_BLK_DEV_INTEGRITY  # 为T10-PI
         
         make olddefconfig
