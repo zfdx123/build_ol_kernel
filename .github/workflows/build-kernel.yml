@@ -85,7 +85,8 @@ jobs:
         scripts/config --module CONFIG_SCSI_SAS_ATTRS
         scripts/config --module CONFIG_BLK_DEV_INTEGRITY
         scripts/config --module CONFIG_RAID_ATTRS
-        scripts/config --enable CONFIG_IRQ_POLL
+        scripts/config --enable CONFIG_IRQ_POL
+        scripts/config --enable CONFIG_SCSI_LOWLEVEL
         scripts/config --module CONFIG_SCSI_MPT3SAS
         
         # USB 配置
