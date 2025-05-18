@@ -83,16 +83,17 @@ jobs:
         scripts/config --module CONFIG_BLK_DEV_SD
         scripts/config --module CONFIG_CHR_DEV_SG
         scripts/config --module CONFIG_SCSI_SAS_ATTRS
-        scripts/config --module CONFIG_SCSI_MPT3SAS
         scripts/config --module CONFIG_BLK_DEV_INTEGRITY
         scripts/config --module CONFIG_RAID_ATTRS
+        scripts/config --enable CONFIG_IRQ_POLL
+        scripts/config --module CONFIG_SCSI_MPT3SAS
         
         # USB 配置
         scripts/config --enable CONFIG_USB             # 基础USB支持
         scripts/config --enable CONFIG_USB_SUPPORT     # USB核心支持
         scripts/config --module CONFIG_USB_STORAGE
         scripts/config --module CONFIG_USB_UAS
-        scripts/config --enable CONFIG_USB_SERIAL      # USB串行核心
+        scripts/config --module CONFIG_USB_SERIAL      # USB串行核心
         scripts/config --module CONFIG_USB_SERIAL_PL2303
         scripts/config --module CONFIG_USB_SERIAL_CH341
         scripts/config --module CONFIG_USB_SERIAL_CH9344
