@@ -84,8 +84,8 @@ jobs:
         scripts/config --module CONFIG_CHR_DEV_SG
         scripts/config --module CONFIG_SCSI_SAS_ATTRS
         scripts/config --enable CONFIG_LIBCRC32C
-        scripts/config --enable CONFIG_BLK_DEV_INTEGRITY
         scripts/config --module CONFIG_BLK_DEV_INTEGRITY
+        scripts/config --enable CONFIG_BLK_DEV_INTEGRITY
         scripts/config --module CONFIG_RAID_ATTRS
         scripts/config --enable CONFIG_IRQ_POL
         scripts/config --enable CONFIG_SCSI_LOWLEVEL
